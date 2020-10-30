@@ -2,6 +2,7 @@
 // Created by andy on 23/10/20.
 //
 
+#include <string>
 #include "Grafo.h"
 
 #ifndef UNTITLED_DETECTORDFS_H
@@ -10,7 +11,7 @@
 
 class DetectorDFS {
 public:
-    int validarCodigo(Grafo& grafo);
+    std::string validarCodigo(Grafo& grafo);
 
 private:
     int recorrerGrafo(Grafo& grafo);

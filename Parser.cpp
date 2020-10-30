@@ -20,15 +20,15 @@ void split(const std::string& str, Container& cont) {
               std::back_inserter(cont));
 }
 
-void Parser::nombrarLineaActual(std::string nombre) {
+void Parser::nombrarLineaActual(const std::string& nombre) {
     this->nombre_linea_actual = nombre;
 }
 
-void Parser::obtenerInstruccionesDeLinea(std::string linea) {
+void Parser::obtenerInstruccionesDeLinea(const std::string& linea) {
     split(linea, this->vector_de_instrucciones);
 }
 
-void Parser::evaluarLinea(std::string linea) {
+void Parser::evaluarLinea(const std::string& linea) {
     obtenerInstruccionesDeLinea(linea);
     std::string primera_instruccion = this->vector_de_instrucciones[0];
     std::string nombre_etiqueta;
@@ -81,12 +81,12 @@ void Parser::agregarConexion(std::string nombre_adyacente, bool flujo_normal) {
     this->flujo_normal = flujo_normal;
 }
 
-void Parser::evaluarArchivo(std::string nombre_archivo) {
+std::string Parser::evaluarArchivo(std::string nombre_archivo) {
     std::ifstream infile(nombre_archivo);
     std::string linea;
     size_t contador = 0;
     if (!infile) {
-        return;
+        return "";
     }
     while (getline(infile, linea)) {
         if (linea == "")
@@ -96,5 +96,5 @@ void Parser::evaluarArchivo(std::string nombre_archivo) {
             grafo.setVerticeInicial(this->nombre_linea_actual);
         contador++;
     }
-    this->validador.validarCodigo(this->grafo);
+    return this->validador.validarCodigo(this->grafo);
 }

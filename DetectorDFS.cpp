@@ -41,15 +41,14 @@ int DetectorDFS::recorrerGrafo(Grafo& grafo) {
     return 0;
 }
 
-int DetectorDFS::validarCodigo(Grafo &grafo) {
+std::string DetectorDFS::validarCodigo(Grafo &grafo) {
     this->recorrerGrafo(grafo);
     if (tiene_ciclos)
-        puts("FAIL: cycle detected");
+        return "FAIL: cycle detected";
     else if (tiene_instrucciones_sin_visitar)
-        puts("FAIL: unused instructions detected");
+        return "FAIL: unused instructions detected";
     else
-        puts("GOOD");
-    return 0;
+        return "GOOD";
 }
 
 void agregarRecorrido(std::map<std::string, std::string> &visitados,

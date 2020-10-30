@@ -14,15 +14,15 @@
 
 class Parser {
 public:
-    void evaluarArchivo(std::string nombre_archivo);
+    std::string evaluarArchivo(std::string nombre_archivo);
 
 private:
-    void evaluarLinea(std::string linea);
-    void obtenerInstruccionesDeLinea(std::string linea);
+    void evaluarLinea(const std::string& linea);
+    void obtenerInstruccionesDeLinea(const std::string& linea);
     void evaluarInstruccionesdeLinea();
     void evaluarInstruccionDeSalto();
     void agregarConexion(std::string nombre_adyacente, bool flujo_normal);
-    void nombrarLineaActual(std::string nombre);
+    void nombrarLineaActual(const std::string& nombre);
 
     std::vector<std::string> vector_de_instrucciones;
     int cant_lineas;
