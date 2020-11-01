@@ -26,10 +26,16 @@ int DetectorDFS::recorrerGrafo(Grafo& grafo) {
         pila.pop();
         std::set<std::string > adyacentes = grafo.obtenerAdyacentes(vertice);
         for (auto& adyacente : adyacentes) {
+            if (adyacente == vertice) {
+                this-> tiene_ciclos = true;
+                return 0;
+            }
             if (visitados.count(adyacente) > 0) {
                 if (visitados.at(adyacente) != vertice)
                     this->tiene_ciclos = detectarCiclo(visitados,
                                                        vertice, adyacente);
+                if (this-> tiene_ciclos)
+                    return 0;
                 continue;
             }
             agregarRecorrido(visitados, vertice, adyacente);
@@ -41,7 +47,13 @@ int DetectorDFS::recorrerGrafo(Grafo& grafo) {
     return 0;
 }
 
+void DetectorDFS::resetearValores() {
+    this-> tiene_ciclos = false;
+    this-> tiene_instrucciones_sin_visitar = false;
+}
+
 std::string DetectorDFS::validarCodigo(Grafo &grafo) {
+    this-> resetearValores();
     this->recorrerGrafo(grafo);
     if (tiene_ciclos)
         return "FAIL: cycle detected";

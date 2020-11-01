@@ -46,7 +46,7 @@ void Grafo::imprimir() {
         printf("%s: ", vertice.c_str());
         std::set<std::string> adyacentes = this->relaciones.at(vertice);
         for (auto adyacente : this->relaciones.at(vertice))
-            //printf("% s - ", adyacente.c_str());
+            printf("%s - ", adyacente.c_str());
         printf("\n");
     }
 }

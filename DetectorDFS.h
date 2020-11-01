@@ -15,6 +15,7 @@ public:
 
 private:
     int recorrerGrafo(Grafo& grafo);
+    void resetearValores();
     bool tiene_ciclos = false;
     bool tiene_instrucciones_sin_visitar = false;
 };

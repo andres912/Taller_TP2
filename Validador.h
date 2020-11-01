@@ -10,16 +10,18 @@
 #include "Thread.h"
 #include "RepositorioDeArchivos.h"
 #include "RepositorioDeResultados.h"
+#include "DetectorDFS.h"
+#include "Parser.h"
 
 class Validador : public Thread{
 public:
     Validador();
     ~Validador();
     void run() override;
-    void evaluarResultado(RepositorioDeArchivos& repo_arch,
-                          RepositorioDeResultados& repo_res);
+    void validarArchivo(RepositorioDeArchivos& repo_arch,
+                        RepositorioDeResultados& repo_res);
+private:
+    DetectorDFS detector;
 };
-
-
 
 #endif //UNTITLED_VALIDADOR_H

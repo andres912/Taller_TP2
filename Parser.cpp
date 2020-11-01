@@ -20,6 +20,8 @@ void split(const std::string& str, Container& cont) {
               std::back_inserter(cont));
 }
 
+Parser::Parser(Grafo& grafo) : grafo(grafo) {}
+
 void Parser::nombrarLineaActual(const std::string& nombre) {
     this->nombre_linea_actual = nombre;
 }
@@ -28,7 +30,7 @@ void Parser::obtenerInstruccionesDeLinea(const std::string& linea) {
     split(linea, this->vector_de_instrucciones);
 }
 
-void Parser::evaluarLinea(const std::string& linea) {
+void Parser::parsearLinea(const std::string& linea) {
     obtenerInstruccionesDeLinea(linea);
     std::string primera_instruccion = this->vector_de_instrucciones[0];
     std::string nombre_etiqueta;
@@ -54,7 +56,7 @@ void Parser::evaluarInstruccionesdeLinea() {
     std::string primera_instruccion = this->vector_de_instrucciones[0];
     if (primera_instruccion.find("j") == 0)
         evaluarInstruccionDeSalto();
-    else if (primera_instruccion.compare("ret") == 0)
+    else if (primera_instruccion == "ret")
         this->flujo_normal = false;
 }
 
@@ -77,25 +79,25 @@ void Parser::evaluarInstruccionDeSalto() {
     }
 }
 
-void Parser::agregarConexion(std::string nombre_adyacente, bool flujo_normal) {
+void Parser::agregarConexion(std::string nombre_adyacente, bool flujo_ok) {
     grafo.agregarArista(this->nombre_linea_actual, nombre_adyacente);
-    this->flujo_normal = flujo_normal;
+    this->flujo_normal = flujo_ok;
 }
 
-std::string Parser::evaluarArchivo(std::string nombre_archivo) {
+int Parser::parsearArchivo(std::string nombre_archivo) {
     std::ifstream infile(nombre_archivo);
     std::string linea;
     size_t contador = 0;
     if (!infile) {
-        return "";
+        return 1;
     }
     while (getline(infile, linea)) {
-        if (linea == "")
+        if (linea.empty())
             continue;
-        evaluarLinea(linea);
+        parsearLinea(linea);
         if (contador == 0)
             grafo.setVerticeInicial(this->nombre_linea_actual);
         contador++;
     }
-    return this->validador.validarCodigo(this->grafo);
+    return 0;
 }

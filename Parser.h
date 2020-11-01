@@ -14,23 +14,23 @@
 
 class Parser {
 public:
-    std::string evaluarArchivo(std::string nombre_archivo);
+    explicit Parser(Grafo& grafo);
+    int parsearArchivo(std::string nombre_archivo);
 
 private:
-    void evaluarLinea(const std::string& linea);
+    void parsearLinea(const std::string& linea);
     void obtenerInstruccionesDeLinea(const std::string& linea);
     void evaluarInstruccionesdeLinea();
     void evaluarInstruccionDeSalto();
-    void agregarConexion(std::string nombre_adyacente, bool flujo_normal);
+    void agregarConexion(std::string nombre_adyacente, bool flujo_ok);
     void nombrarLineaActual(const std::string& nombre);
 
     std::vector<std::string> vector_de_instrucciones;
-    int cant_lineas;
-    Grafo grafo;
+    int cant_lineas = 0;
+    Grafo& grafo;
     std::string ultima_etiqueta = "";
     std::string nombre_linea_actual;
     bool flujo_normal = true;
-    DetectorDFS validador;
 };
 
 

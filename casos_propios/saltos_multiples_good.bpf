@@ -1,0 +1,15 @@
+		ldh[1]
+		ld[2]
+		jmp down_1
+up_1:	ld[3]
+		ldh[5]
+		ldh[6]
+		jmp down_2
+down_1:	jmp up_1
+up_2:	ldh[5]
+		ldh[4]
+		ld[3]
+		ld[5]
+		ret 3
+down_2:	jmp up_2						
+

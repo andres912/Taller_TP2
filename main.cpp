@@ -28,13 +28,12 @@ int main(int argc, char** argv) {
     }
 
     std::atomic_int contador(0);
-
     while (repositorio_arch.tieneArchivosSinProcesar()) {
-        size_t pos = contador%cantidad_de_hilos;
+        size_t pos_arreglo = contador%cantidad_de_hilos;
         if (!repositorio_arch.tieneArchivosSinProcesar())
             break;
-        Validador* validador = validadores[pos];
-        validador->evaluarResultado(repositorio_arch, repositorio_res);
+        Validador* validador = validadores[pos_arreglo];
+        validador->validarArchivo(repositorio_arch, repositorio_res);
         contador++;
     }
 

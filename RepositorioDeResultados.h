@@ -14,7 +14,7 @@ class RepositorioDeResultados {
 public:
     void agregarResultado(std::string resultado);
     void imprimirResultados();
-
+    
 private:
     std::queue<std::string> resultados;
 };
