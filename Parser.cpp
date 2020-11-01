@@ -50,6 +50,7 @@ void Parser::evaluarInstruccionesdeLinea() {
     grafo.agregarVertice(this->nombre_linea_actual);
     if (this-> flujo_normal && this->cant_lineas > 0)
         grafo.agregarArista(this-> ultima_etiqueta, nombre_linea_actual);
+    this->flujo_normal = true;
     std::string primera_instruccion = this->vector_de_instrucciones[0];
     if (primera_instruccion.find("j") == 0)
         evaluarInstruccionDeSalto();

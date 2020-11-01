@@ -19,8 +19,7 @@ int main(int argc, char** argv) {
         repositorio_arch.guardarArchivo(nombre_archivo);
     }
     for (int i = 0; i < cantidad_de_hilos; ++i) {
-        Validador* validador = new Validador(i+1, &repositorio_arch,
-        	&repositorio_res);
+        Validador* validador = new Validador();
         validadores.push_back(validador);
     }
 
@@ -35,7 +34,7 @@ int main(int argc, char** argv) {
         if (!repositorio_arch.tieneArchivosSinProcesar())
             break;
         Validador* validador = validadores[pos];
-        validador->evaluarResultado();
+        validador->evaluarResultado(repositorio_arch, repositorio_res);
         contador++;
     }
 

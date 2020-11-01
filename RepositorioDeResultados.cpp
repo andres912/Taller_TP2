@@ -6,9 +6,9 @@
 #include "RepositorioDeResultados.h"
 
 void RepositorioDeResultados::agregarResultado(std::string resultado) {
-    m.lock();
+    std::mutex mutex;
+    std::unique_lock<std::mutex> lck(mutex);
     this-> resultados.push(resultado);
-    m.unlock();
 }
 
 void RepositorioDeResultados::imprimirResultados() {

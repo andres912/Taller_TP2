@@ -13,15 +13,11 @@
 
 class Validador : public Thread{
 public:
-    Validador(int num_thread, RepositorioDeArchivos* repo_arch,
-                         RepositorioDeResultados* repo_res);
+    Validador();
     ~Validador();
     void run() override;
-    void evaluarResultado();
-private:
-    int num_thread;
-    RepositorioDeArchivos* repositorio_archivos;
-    RepositorioDeResultados* repositorio_resultados;
+    void evaluarResultado(RepositorioDeArchivos& repo_arch,
+                          RepositorioDeResultados& repo_res);
 };
 
 

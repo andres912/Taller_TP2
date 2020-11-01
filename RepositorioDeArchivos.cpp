@@ -11,18 +11,8 @@ void RepositorioDeArchivos::guardarArchivo(const std::string& nombre) {
 }
 
 std::string RepositorioDeArchivos::getProximoArchivo() {
-    std::condition_variable cv;
-    std::string nombre_archivo = obtenerArchivo(cv);
-    abrirPuerta(cv);
-    return nombre_archivo;
-}
-
-bool RepositorioDeArchivos::tieneArchivosSinProcesar() {
-    return !this->nombres_de_archivos.empty();
-}
-
-std::string RepositorioDeArchivos::obtenerArchivo(std::condition_variable& cv) {
-    std::unique_lock<std::mutex> lck(this->mutex);
+    std::mutex mutex;
+    std::unique_lock<std::mutex> lck(mutex);
     std::string nombre_archivo;
     if (this->nombres_de_archivos.empty()) {
         nombre_archivo = "";
@@ -33,8 +23,6 @@ std::string RepositorioDeArchivos::obtenerArchivo(std::condition_variable& cv) {
     return nombre_archivo;
 }
 
-void RepositorioDeArchivos::abrirPuerta(std::condition_variable& cv) {
-    std::unique_lock<std::mutex> lock(this->mutex);
-    this-> gate_open = true;
-    cv.notify_all();
+bool RepositorioDeArchivos::tieneArchivosSinProcesar() {
+    return !this->nombres_de_archivos.empty();
 }

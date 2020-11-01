@@ -7,20 +7,17 @@
 #include "Validador.h"
 #include "Parser.h"
 
-Validador::Validador(int num_thread, RepositorioDeArchivos* repo_arch,
-                     RepositorioDeResultados* repo_res) {
-    this->num_thread = num_thread;
-    this->repositorio_archivos = repo_arch;
-    this->repositorio_resultados = repo_res;
-}
+Validador::Validador() {}
 
 Validador::~Validador(){}
 
 void Validador::run() { }
 
-void Validador::evaluarResultado() {
-    std::string nombre_archivo = repositorio_archivos->getProximoArchivo();
+void Validador::evaluarResultado(RepositorioDeArchivos& repo_arch,
+                                 RepositorioDeResultados& repo_res) {
+    std::string nombre_archivo = repo_arch.getProximoArchivo();
     Parser parser = Parser();
     std::string resultado = parser.evaluarArchivo(nombre_archivo);
-    this-> repositorio_resultados-> agregarResultado(resultado);
+    std::string resultado_a_imprimir = nombre_archivo + " " + resultado;
+    repo_res.agregarResultado(resultado_a_imprimir);
 }

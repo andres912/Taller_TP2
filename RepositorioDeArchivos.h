@@ -18,11 +18,7 @@ public:
     bool tieneArchivosSinProcesar();
 
 private:
-    std::string obtenerArchivo(std::condition_variable& cv);
-    void abrirPuerta(std::condition_variable& cv);
     std::queue<std::string> nombres_de_archivos;
-    std::mutex mutex;
-    bool gate_open = false;
 };
 
 

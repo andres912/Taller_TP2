@@ -17,7 +17,6 @@ public:
 
 private:
     std::queue<std::string> resultados;
-    std::mutex m;
 };
 
 
