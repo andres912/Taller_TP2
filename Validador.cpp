@@ -22,7 +22,7 @@ void Validador::validarArchivo(RepositorioDeArchivos& repo_arch,
     bool val_parseo = parser.parsearArchivo(nombre_archivo);
     if (val_parseo != 0)
         return;
-    std::string resultado = this-> detector.validarCodigo(grafo);
+    std::string resultado = this->detector.evaluarGrafo(grafo);
     std::string resultado_a_imprimir = nombre_archivo + " " + resultado;
     repo_res.agregarResultado(resultado_a_imprimir);
 }

@@ -52,7 +52,7 @@ void DetectorDFS::resetearValores() {
     this-> tiene_instrucciones_sin_visitar = false;
 }
 
-std::string DetectorDFS::validarCodigo(Grafo &grafo) {
+std::string DetectorDFS::evaluarGrafo(Grafo &grafo) {
     this-> resetearValores();
     this->recorrerGrafo(grafo);
     if (tiene_ciclos)
