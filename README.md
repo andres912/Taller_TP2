@@ -1,95 +1,61 @@
-## **INFORME TP 1**
+## **INFORME TP 2**
 
 **Alumno:** Andrés Fernández
 
 **Padrón:** 102220
 
-**Link al repositorio:** https://github.com/andres912/Taller_TP1
+**Link al repositorio:** https://github.com/andres912/Taller_TP2
 
 ### **DESCRIPCIÓN**
 
-El siguiente diagrama muestra de forma muy general el funcionamiento del código:
 
-![Captura](capturas/MessageDiagram.png)
+El siguiente diagrama de clases muestra a alto nivel los principales métodos y atributos de las clases:
 
-Con un poco más de detalle, el funcionamiento del código es el siguiente:
+![Captura](capturas/diagramaDeClases.png)
 
-* TDA Client / TDA Server:
+El siguiente diagrama de secuencia muestra el proceso de validación de un archivo BPF:
 
-    Son los TDAs que se encargan de llevar a cabo el envío y la recepción del mensaje de forma general. Ambos cuentan con los siguientes atributos:
+![Captura](capturas/diagramaDeSecuencia.png)
 
-        - TDA Cipher: para codificar/decodificar el mensaje.
-        - TDA Socket: para enviar/recibir el mensaje. El Server tiene dos sockets, uno de conexión y otro de aceptación.
-        - Buffer: el buffer utilizado para transportar cada chunk del mensaje desde que se lee de STDIN hasta que se escribe en STDOUT.
+El trabajo lo hice básicamente en dos partes:
 
+* La primera parte está dedicada a todos los objetos relacionados a parsear un archivo, convertirlo en un grafo y poder detectar ciclos e instrucciones no usadas en ese archivo. Los objetos creados con ese propósito son los siguientes:
 
-* Primero, el TDA Server establece a través de su TDA Socket la conexión necesaria para eventualmente recibir el mensaje. Si la conexión falla, el programa del Server se cierra. Esta paso no se incluyó en el diagrama porque el diagrama muestra otro tipo de secuencia, y agregar este paso lo volvía confuso.
+	- Grafo: es básicamente un map(vertice, set_de_adyacentes) al cual se le pueden agregar vertices y aristas. Los vértices son strings: si una línea tiene etiqueta el vértice es el nombre de la etiqueta, de lo contrario, el vértice es el número de la línea (empezando de 1). De esta forma, dos vértices no pueden tener el mismo nombre (se asume que las etiquetas no son sólo números). EL Grafo guarda su vértice inicial, para que pueda validarse correctamente.
 
-* Si la conexión fue exitosa, el Server se quedará esperando a que el Client haga su conexión correspondiente.
+	- Parser: es el objeto que se encarga de armar el grafo a partir de un archivo. Abre el archivo, lee de a una línea por vez, y de acuerdo a ciertos criterios, agrega vértices y aristas al grafo.
 
-* Por su lado, el TDA Client establecerá la conexión necesaria para el envío del mensaje. De no poder conectarse, el programa del Client se cierra. De lo contrario, se iniciará el ciclo de envío del mensaje. A partir de aquí, la secuencia contada seguirá el mismo esquema que el diagrama mostrado.
+	- DetectorDFS: es quien se encarga de validar un archivo, a partir del grafo del mismo. Si encuentra un ciclo en el grafo, inmediatamente corta la detección y lo informa. Si llegó al final y no visitó a todos los vértices del grafo, informa que hay instrucciones sin usar. Si ninguna de las dos es cierta, informa que el archivo es correcto.
 
-* El Cliente lee el mensaje de STDIN. Este mensaje es tomado como una cadena de bytes, y no como un string de caracteres (se transforma a unsigned char y no se usa strlen para conocer su largo). Este mensaje se lee de forma cíclica, en trozos de 64 bytes. El fin del ciclo se da cuando la función **feof** devuelve verdadero. La función **fread** marca la cantidad de bytes leídos, que puede ser como máximo 64. Esta cantidad de bytes leídos se utiliza a lo largo del ciclo de envío del mensaje.
+* La segunda parte está relacionada al uso de threads de acuerdo a lo solicitado por el enunciado:
 
+	- RepositorioDeArchivos: guarda los nombres de los archivos recibidos en argv en una cola. La sección de código en la cual se desencola un archivo está protegida con un lock_guard.
 
-* El Cliente envía el trozo del mensaje leído al TDA Cipher que tiene instanciado, que se encargará de codificarlo de acuerdo a los argumentos recibidos por parámetro.
+	- RepositorioDeResultados: guarda los resultados de las validaciones de los archivos en una cola. La sección de código en la cual se encola un resultado está protegida con otro lock_guard.
 
-* TDA Cipher:
+	- Thread: es un objeto que encapsula el comportamiento de un std::thread. Tiene los métodos básicos de creación, destrucción, run, start y join.
 
-	Es el TDA que se "encarga" de codificar o decodificar un mensaje (utiliza internamente un TDA Encoder de acuerdo al tipo de traducción requerido).
+	- Validador: es un objeto que hereda de Thread y que implementa los métodos de Thread que son abstractos. Es quien se encarga de:
 
-	    - callback_t init_function: puntero a función de inicio. Hay una función de inicio por tipo de traducción.
-        - callback_t init_function: puntero a función de traducción. Hay una función de traducción por tipo de traducción.
-        - callback_t init_function: puntero a función de cierre. Hay una función de cierre por tipo de traducción.
-        - void* encoder: un puntero genérico al encoder que finalmente terminará realizando la traducción. Se pasa por parámetro en las tres funciones anteriormente mencionadas. Hay 3 tipos de encoders:
+		* Pedir un archivo al RepositorioDeArchivos.
 
-* TDA CesarEncoder:
+		* Validar el archivo utilizando un DetectorDFS instanciado como atributo, y creado en cada validación un Grafo y un Parser.
 
-        - int offset: el offset usado en la traducción.
-        - int op_type: 0 para codificar, 1 para decodificar.
-
-* TDA VigenereEncoder:
-
-        - char* key_string: la clave de cifrado utilizada.
-        - int op_type: 0 para codificar, 1 para decodificar.
-        - int key_length: el largo de la clave de cifrado.
-        - int last_pos: la última posición visitada en el mensaje (valor necesario para guardar el estado entre chunks del mensaje).
-
-* TDA Rc4Encoder:
-
-        - char* key_string: la clave de cifrado utilizada.
-        - int pos_1: la posición 1 utilizada en el cifrado RC4 (valor necesario para guardar el estado entre chunks del mensaje)
-        - int pos_1: la posición 2 utilizada en el cifrado RC4 (valor necesario para guardar el estado entre chunks del mensaje). 
-        - unsigned char arreglo[256]: el arreglo random utilizado en el cifrado RC4 (es necesario guardar el mismo para todo el mensaje).         
-
-
-* El cipher codifica el trozo de 64 Bytes del mensaje en un buffer correspondiente al Cliente. El Cliente le indica a su Socket que reenvíe este buffer al socket servidor. El envío del mensaje se hace mediante un ciclo, ya que no necesariamente los 64 Bytes (o el largo del trozo de mensaje) son enviados en una única operación.
-
-* TDA Socket:
-
-	Es el TDA que se encarga de conectarse a los sockets "reales" (los provistos por la librería correspondiente) y de enviar y/o recibir un mensaje a/desde otro socket. Tiene los siguientes atributos:
-
-		- struct addrinfo* addr_info: es una estructura propia de la librería de sockets, necesaria para la conexión entre los mismos.
-    	- int connection_socket_fd: guarda el fd correspondiente al socket de conexión (en el caso del socket cliente, es el único socket necesario).
-    	- int acceptance_socket_fd: guarda el fd correspondiente al socket de aceptación, que es el que termina recibiendo el mensaje (sólo necesario para el servidor).
-
-    En un primer momento, había hecho dos tipos de socket distintos: un TDA transmissionSocket y otro TDA receptorSocket, cada uno con sus propios métodos y alguna diferencia en su estructura (el transmissionSocket no tenía acceptance_socket_fd). Sin embargo, como en clase se hizo hincapié a que ambos sockets pueden enviar y recibir información, me pareció más correcto terminar haciendo un único TDA socket que agrupara a todos los métodos.
-
-* El socket servidor recibe el mensaje del socket cliente. Al igual que en el envío, la recepción del total de los bytes se realiza en un ciclo. A diferencia de la operación de envío, en la recepción no se conoce la cantidad de bytes a recibir del cliente, por lo que el ciclo se corta cuando en una de las operaciones se recibieron 0 bytes.
-
-* El trozo de mensaje se envía a un nuevo cipher, que esta vez se encargará de decodificarlo. Para Cesar y Vigenere, se realizará la operación matemática inversa a la realizada durante la codificación. Para RC4, la operación será exactamente la misma que en su codificación.
-
-* Se envía el trozo de mensaje para ser impreso por salida estándar, y se vuelve a iniciar el ciclo. Recién en este momento, se vuelve a tomar la cadena de bytes como un string, por lo que se hace un printf con "%c" como formato.
+		* Guardar el resultado de la validación en el RepositorioDeResultados.
 
 ### **COMENTARIOS**
 
-* El uso de las líneas **// cppcheck-suppress unusedStructMember** está relacionado a que se utilizan punteros a funciones a la hora de inicializar, traducir y cerrar los encoders. Por lo tanto, cppcheck asume que no se están utilizando los atributos de los encoders cuando en realidad sí están siendo utilizados.
+Las principales dificultades que presentó el trabajo fueron:
 
-* Además de las dificultades mencionadas, también surgió una a la hora de enviar y recibir el mensaje entre los sockets. Tardé bastante en darme cuenta de ir actualizando la posición inicial del envío del buffer en cada **send** y en cada **receive**. Es decir, si en la primera operación de envío se enviaron n bytes, en la próxima operación el envío del mensaje debía comenzar desde la posición buffer[n], y la cantidad de bytes a enviar debería ser de k-n bytes (con k el largo del trozo de mensaje). De forma análoga debía hacerse con la recepción del mensaje.
+* La introducción de un nuevo lenguaje que de por sí es bastante complejo como C++, y el hecho de pasar de un lenguaje de programación estructurada a uno orientado a objetos (aunque en el TP 1 básicamente se buscó simular una orientación a objetos).
 
-* Intenté usar el heap lo menos posible, pero en algunos casos tuve que decidir entre el uso del heap y un código más prolijo. Por ejemplo, pude hacer un único tipo callback_t para las funciones de decodificación, pero para eso fue necesario un vector de punteros genéricos para cuya utilización tuve que usar malloc.
+* La complejidad propia de C++ en cuanto a referencias, punteros, move semantics, etc. Principalmente fue complicado tener que dejar de usar punteros para darle prioridad a las referencias, teniendo en cuenta las restricciones propias de las referencias (no pueden ser NULL, no pueden declararse sin definirse...).
 
-* En un primer momento, había intentado leer el stdin de a 64 bytes, pero pasando todo a un buffer que contuviera la totalidad del mensaje. A partir de ahí, sólo se tenía un buffer a codificar y enviar al servidor. El problema es que eso implicaba poner un límite a la cantidad de bytes que podía contener el mensaje, porque el buffer estaba en memoria estática y necesitaba darle un tamaño antes de leer stdin. Cuando entendí mejor lo que se pedía en el enunciado, tuve que cambiar el funcionamiento del código.
+* Entender las cuestiones básicas del funcionamiento de los threads. Es un tema completamente nuevo y, aunque se nota que lo pedido en este TP es relativamente básico, entender bien cómo funcionan los threads, los mutex y los locks tiene su complejidad.
+
+* Respetar lós conceptos de la orientación a objetos, en cuanto a la lógica de la abstracción de los objetos, no sobrecargar a un sólo objeto con muchas responsabilidades, tratar de tener alta cohesión y baja dependencia.
+
+* Lo resultante de mezclar todo lo anterior. Por ejemeplo, en un momento quise pasar por referencia a los repositorios al objeto Validador, para que los tuviera como atributos. Pero cuando quería guardarlos, no podía utilizar el operador =. Los repositorios tenían como atributo un mutex, lo que destruía el operador = por defecto. Quise sobrecargar el operador = de los repositorios, pero no sabía cómo hacer para pasar el mutex al nuevo objeto dentro de la sobrecarga. Finalmente, decidí dos cosas: que los repositorios no tuvieran un mutex como atributo, ya que lo usaban en un sólo método, y que el Validador tampoco tuviera a los repositorios como atributos, sino que se pasaran dentro de un sólo método. Podría haber hecho una sola de estas dos cosas, pero me pareció que tenía más sentido hacer ambos cambios.
 
 
 
