@@ -18,6 +18,7 @@ public:
     bool tieneArchivosSinProcesar();
 
 private:
+    std::mutex m;
     std::queue<std::string> nombres_de_archivos;
 };
 

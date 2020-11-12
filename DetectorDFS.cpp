@@ -9,6 +9,10 @@
 #include <set>
 #include "DetectorDFS.h"
 
+#define GRAFO_VALIDO 0
+#define GRAFO_CICLICO 1
+#define INSTRUCCIONES_SIN_USAR 2
+
 void agregarRecorrido(std::map<std::string, std::string> &visitados,
               const std::string& vertice_actual, const std::string& adyacente);
 bool detectarCiclo(std::map<std::string, std::string>& visitados, const
@@ -52,15 +56,14 @@ void DetectorDFS::resetearValores() {
     this-> tiene_instrucciones_sin_visitar = false;
 }
 
-std::string DetectorDFS::evaluarGrafo(Grafo &grafo) {
+int DetectorDFS::evaluarGrafo(Grafo &grafo) {
     this-> resetearValores();
     this->recorrerGrafo(grafo);
     if (tiene_ciclos)
-        return "FAIL: cycle detected";
+        return GRAFO_CICLICO;
     else if (tiene_instrucciones_sin_visitar)
-        return "FAIL: unused instructions detected";
-    else
-        return "GOOD";
+        return INSTRUCCIONES_SIN_USAR;
+    return GRAFO_VALIDO;
 }
 
 void agregarRecorrido(std::map<std::string, std::string> &visitados,

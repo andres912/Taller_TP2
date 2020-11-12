@@ -11,7 +11,7 @@
 
 class DetectorDFS {
 public:
-    std::string evaluarGrafo(Grafo& grafo);
+    int evaluarGrafo(Grafo& grafo);
 
 private:
     int recorrerGrafo(Grafo& grafo);

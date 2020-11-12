@@ -7,7 +7,9 @@
 #include <set>
 #include "Grafo.h"
 
-int Grafo::agregarVertice(std::string nombre_vertice) {
+Grafo::Grafo() : cant_vertices(0), cant_aristas(0) {}
+
+int Grafo::agregarVertice(const std::string& nombre_vertice) {
     if (this->relaciones.count(nombre_vertice) > 0)
         return 1;
 
@@ -18,13 +20,14 @@ int Grafo::agregarVertice(std::string nombre_vertice) {
     return 0;
 }
 
-int Grafo::agregarArista(std::string vertice_1, std::string vertice_2) {
+int Grafo::agregarArista(const std::string& vertice_1,
+                         const std::string& vertice_2) {
     this->relaciones.at(vertice_1).insert(vertice_2);
     this->cant_aristas++;
     return 0;
 }
 
-std::set<std::string> Grafo::obtenerAdyacentes(std::string vertice) {
+std::set<std::string> Grafo::obtenerAdyacentes(const std::string& vertice) {
     return this->relaciones.at(vertice);
 }
 
@@ -33,20 +36,9 @@ std::string Grafo::getVerticeInicial() {
 }
 
 void Grafo::setVerticeInicial(std::string nombre_vertice_inicial) {
-    this->vertice_inicial = nombre_vertice_inicial;
+    this->vertice_inicial = std::move(nombre_vertice_inicial);
 }
 
 size_t Grafo::getOrden() {
     return this->relaciones.size();
-}
-
-void Grafo::imprimir() {
-    for (auto par : this->relaciones) {
-        std::string vertice = par.first;
-        printf("%s: ", vertice.c_str());
-        std::set<std::string> adyacentes = this->relaciones.at(vertice);
-        for (auto adyacente : this->relaciones.at(vertice))
-            printf("%s - ", adyacente.c_str());
-        printf("\n");
-    }
 }

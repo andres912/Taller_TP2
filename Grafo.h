@@ -11,12 +11,13 @@
 
 class Grafo {
 public:
-    int agregarVertice(std::string nombre_vertice);
-    int agregarArista(std::string vertice_1, std::string vertice_2);
-    std::set<std::string> obtenerAdyacentes(std::string vertice);
+    Grafo();
+    int agregarVertice(const std::string& nombre_vertice);
+    int agregarArista(const std::string& vertice_1,
+                      const std::string& vertice_2);
+    std::set<std::string> obtenerAdyacentes(const std::string& vertice);
     std::string getVerticeInicial();
     size_t getOrden();
-    void imprimir();
     void setVerticeInicial(std::string nombre_vertice_inicial);
 
 private:

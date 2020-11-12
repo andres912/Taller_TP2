@@ -5,12 +5,10 @@
 #ifndef UNTITLED_THREAD_H
 #define UNTITLED_THREAD_H
 #include <thread>
-#include <pthread.h>
 
 class Thread {
 public:
-    Thread();
-    virtual ~Thread() {}
+    virtual ~Thread() = default;
     void start();
     void join();
     virtual void run() = 0;

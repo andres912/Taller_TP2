@@ -12,11 +12,12 @@
 
 class RepositorioDeResultados {
 public:
-    void agregarResultado(std::string resultado);
+    void agregarResultado(const std::string& resultado);
     void imprimirResultados();
     
 private:
     std::queue<std::string> resultados;
+    std::mutex m;
 };
 
 

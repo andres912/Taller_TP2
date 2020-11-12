@@ -16,12 +16,15 @@
 class Validador : public Thread{
 public:
     Validador();
-    ~Validador();
+    ~Validador() override;
     void run() override;
     void validarArchivo(RepositorioDeArchivos& repo_arch,
                         RepositorioDeResultados& repo_res);
 private:
     DetectorDFS detector;
+
+    static std::string procesarResultadoDeValidacion(int resultado_validacion,
+                                             const std::string& nombre_archivo);
 };
 
 #endif //UNTITLED_VALIDADOR_H

@@ -11,8 +11,7 @@ void RepositorioDeArchivos::guardarArchivo(const std::string& nombre) {
 }
 
 std::string RepositorioDeArchivos::getProximoArchivo() {
-    std::mutex mutex;
-    std::lock_guard<std::mutex> lck(mutex);
+    m.lock();
     std::string nombre_archivo;
     if (this->nombres_de_archivos.empty()) {
         nombre_archivo = "";
@@ -20,9 +19,11 @@ std::string RepositorioDeArchivos::getProximoArchivo() {
         nombre_archivo = this-> nombres_de_archivos.front();
         this->nombres_de_archivos.pop();
     }
+    m.unlock();
     return nombre_archivo;
 }
 
 bool RepositorioDeArchivos::tieneArchivosSinProcesar() {
     return !this->nombres_de_archivos.empty();
 }
+

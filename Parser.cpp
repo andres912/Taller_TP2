@@ -34,7 +34,7 @@ void Parser::parsearLinea(const std::string& linea) {
     obtenerInstruccionesDeLinea(linea);
     std::string primera_instruccion = this->vector_de_instrucciones[0];
     std::string nombre_etiqueta;
-    if (primera_instruccion.find(":") != std::string::npos) {
+    if (primera_instruccion.find(':') != std::string::npos) {
         nombre_etiqueta = primera_instruccion.substr(0,
                                               primera_instruccion.size()-1);
         this->vector_de_instrucciones.erase(vector_de_instrucciones.begin());
@@ -54,7 +54,7 @@ void Parser::evaluarInstruccionesdeLinea() {
         grafo.agregarArista(this-> ultima_etiqueta, nombre_linea_actual);
     this->flujo_normal = true;
     std::string primera_instruccion = this->vector_de_instrucciones[0];
-    if (primera_instruccion.find("j") == 0)
+    if (primera_instruccion.find('j') == 0)
         evaluarInstruccionDeSalto();
     else if (primera_instruccion == "ret")
         this->flujo_normal = false;
@@ -79,12 +79,13 @@ void Parser::evaluarInstruccionDeSalto() {
     }
 }
 
-void Parser::agregarConexion(std::string nombre_adyacente, bool flujo_ok) {
+void Parser::agregarConexion(const std::string& nombre_adyacente,
+                             bool flujo_ok) {
     grafo.agregarArista(this->nombre_linea_actual, nombre_adyacente);
     this->flujo_normal = flujo_ok;
 }
 
-int Parser::parsearArchivo(std::string nombre_archivo) {
+int Parser::parsearArchivo(const std::string& nombre_archivo) {
     std::ifstream infile(nombre_archivo);
     std::string linea;
     size_t contador = 0;

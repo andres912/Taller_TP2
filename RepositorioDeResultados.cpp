@@ -5,10 +5,10 @@
 #include <string>
 #include "RepositorioDeResultados.h"
 
-void RepositorioDeResultados::agregarResultado(std::string resultado) {
-    std::mutex mutex;
-    std::lock_guard<std::mutex> lck(mutex);
+void RepositorioDeResultados::agregarResultado(const std::string& resultado) {
+    m.lock();
     this-> resultados.push(resultado);
+    m.unlock();
 }
 
 void RepositorioDeResultados::imprimirResultados() {
